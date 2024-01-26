@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hobbyboard
+    username: hanchang-yun
+    password: hobbyboard
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        # show_sql: true
+        format_sql: true
+
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+server:
+  servlet:
+    jsp:
+      init-parameters:
+        development: true
+
+logging.level:
+  org.hibernate.SQL: debug
