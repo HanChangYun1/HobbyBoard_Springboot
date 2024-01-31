@@ -10,5 +10,12 @@
 </head>
 <body>
 <h1>Hello Java!</h1>
+
+<div>
+    <!-- 네이버 로그인 버튼 -->
+    <a href="/oauth2/authorization/naver">
+        <img src="https://static.nid.naver.com/oauth/small_g_in.PNG" height="30" alt="네이버 아이디로 로그인">
+    </a>
+</div>
 </body>
 </html>

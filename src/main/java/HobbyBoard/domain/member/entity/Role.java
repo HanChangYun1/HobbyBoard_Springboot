@@ -1,4 +1,4 @@
-package HobbyBoard.member;
+package HobbyBoard.domain.member.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

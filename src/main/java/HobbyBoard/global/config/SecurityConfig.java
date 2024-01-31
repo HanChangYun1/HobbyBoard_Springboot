@@ -1,6 +1,9 @@
-package HobbyBoard.config;
+package HobbyBoard.global.config;
 
-import HobbyBoard.member.Role;
+import HobbyBoard.domain.member.entity.Role;
+import HobbyBoard.domain.member.service.CustomOAuth2UserService;
+import HobbyBoard.domain.member.service.OAuth2LoginFailureHandler;
+import HobbyBoard.domain.member.service.OAuth2LoginSuccessHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -20,20 +25,31 @@ import java.io.PrintWriter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+//            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
             .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(request ->
                     request.requestMatchers("/**").permitAll()
                             .requestMatchers("/post/create").hasRole(Role.USER.name())
                             .requestMatchers("/admin").hasRole(Role.ADMIN.name())
-                            .anyRequest().authenticated()
+//                            .anyRequest().authenticated()
             )
-            .exceptionHandling((exceptionConfig) ->
-                    exceptionConfig.authenticationEntryPoint(unauthorizedEntryPoint).accessDeniedHandler(accessDeniedHandler)
+            .oauth2Login(login ->
+                    login.userInfoEndpoint(endpoint -> endpoint.userService(customOAuth2UserService))
+                         .successHandler(oAuth2LoginSuccessHandler)
+                         .failureHandler(oAuth2LoginFailureHandler)
             );
 
         return http.build();
@@ -67,5 +83,10 @@ public class SecurityConfig {
 
         private final HttpStatus status;
         private final String message;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }
