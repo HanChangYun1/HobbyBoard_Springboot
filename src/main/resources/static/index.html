@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script>
+    var socket = new SockJS('/push');
+    var stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function(frame) {
+        stompClient.subscribe('/user/queue/push', function(message) {
+            var alertDiv = document.getElementById('socketAlert');
+            alertDiv.innerHTML = message.body;
+        });
+    });
+</script>
+
+<body>
+    <h1>구글 연동 로그인 테스트</h1>
+        <div>
+            <div>
+                <a href="/post/save">글 등록</a>
+            </div>
+
+            <div>
+                <a href="/logout">Logout</a>
+            </div>
+            <div>
+                <a href="/oauth2/authorization/google">Google Login</a>
+            </div>
+        </div>
+
+    <div>
+        <h3>알람</h3>
+        <div id="socketAlertDiv">
+            <div id="socketAlert" class="alert alert-warning" role="alert"></div>
+        </div>
+    </div>
+
+</body>
+</html>
