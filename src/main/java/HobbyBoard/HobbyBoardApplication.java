@@ -11,11 +11,10 @@ import java.util.UUID;
 
 @EnableJpaAuditing
 @SpringBootApplication
-public class HobbyBoardSpringBootApplication {
-
+public class HobbyBoardApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HobbyBoardSpringBootApplication.class, args);
+		SpringApplication.run(HobbyBoardApplication.class, args);
 	}
 
 	@Bean
@@ -23,4 +22,3 @@ public class HobbyBoardSpringBootApplication {
 		return () -> Optional.of(UUID.randomUUID().toString());
 	}
 }
-
